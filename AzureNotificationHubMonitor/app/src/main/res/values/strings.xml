@@ -1,0 +1,19 @@
+<resources>
+    <string name="registered_devices">כמות מכשירית רשומים</string>
+    <string name="send_to_android">שלח לאנדרואיד</string>
+    <string name="send_to_all">שלח לכולם</string>
+    <string name="send_to_ios">שלח לאייפון</string>
+    <string name="select_tag">יש לבחור קטגוריה</string>
+    <string name="check_in_progress">בודק…</string>
+    <string name="check_failed">הבדיקה נכשלה</string>
+    <string name="send_in_progress">שולח…</string>
+    <string name="send_success">הצלחה!</string>
+    <string name="send_failed">השליחה נכשלה. בדוק חיבור לאינטרנט</string>
+    <string name="send_failed_ios_passed_android">השליחה הצליחה לאנדרואיד ונכשלה לאייפון</string>
+    <string name="error_missing_message">יש לכתוב הודעה</string>
+    <string name="error_message_too_long">ההודעה ארוכה מ-1900 תווים. בבקשה לקצר</string>
+    <string name="send">שלח</string>
+    <string name="cancel">בטל</string>
+    <string name="message_in_tag">ההודעה בקטגורית %s</string>
+    <string name="message_send_to_count">ההודעה תישלח ל-%d מכשירים. האם אתה בטוח?</string>
+</resources>
