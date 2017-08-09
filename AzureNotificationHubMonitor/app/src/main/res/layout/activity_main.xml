@@ -5,6 +5,8 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:orientation="vertical"
+              android:layoutDirection="rtl"
+              android:layout_margin="8dp"
               tools:context="com.dbahat.azurenotificationhubmonitor.MainActivity">
 
     <RadioGroup
@@ -14,23 +16,33 @@
         <RadioButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="categogy_1"
-            android:tag="category1_tag"/>
+            android:text="חירום"
+            android:tag="cami2017_emergency"/>
         <RadioButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="category_2"
-            android:tag="category2_tag"/>
+            android:text="כללי"
+            android:tag="cami2017_general"/>
         <RadioButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="category_3"
-            android:tag="category3_tag"/>
+            android:text="אירועים"
+            android:tag="cami2017_events"/>
         <RadioButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="category_4"
-            android:tag="category4_tag"/>
+            android:text="קוספליי"
+            android:tag="cami2017_cosplay"/>
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="הסעות"
+            android:tag="cami2017_bus"/>
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="בדיקות"
+            android:tag="cami2017_test"/>
 
     </RadioGroup>
 
@@ -57,13 +69,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/send_to_ios"
-            android:onClick="sendiOSNotificationButtonOnClick"/>
+            android:onClick="sendiOSNotificationButtonOnClick"
+            android:visibility="gone"/>
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/send_to_all"
-            android:onClick="sendBothNotificationButtonOnClick"/>
+            android:onClick="sendBothNotificationButtonOnClick"
+            android:visibility="gone"/>
 
     </LinearLayout>
 
