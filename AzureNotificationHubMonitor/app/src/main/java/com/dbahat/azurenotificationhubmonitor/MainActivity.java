@@ -1,5 +1,6 @@
 package com.dbahat.azurenotificationhubmonitor;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -13,8 +14,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.RetryPolicy;
+import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.dbahat.azurenotificationhubmonitor.messages.ApnMessage;
@@ -88,17 +93,30 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 	public void sendAndroidNotificationButtonOnClick(View view) {
-		showAreYouSureDialogAndSend(DialogType.Android, this::sendGcmRequest);
+		showAreYouSureDialogAndSend(DialogType.Android, new SendNotificationTask() {
+			@Override
+			public void run(String tag) {
+				sendGcmRequest(tag);
+			}
+		});
 	}
 
 	public void sendiOSNotificationButtonOnClick(View view) {
-		showAreYouSureDialogAndSend(DialogType.iOS, this::sendApnRequest);
+		showAreYouSureDialogAndSend(DialogType.iOS, new SendNotificationTask() {
+			@Override
+			public void run(String tag) {
+				sendApnRequest(tag);
+			}
+		});
 	}
 
 	public void sendBothNotificationButtonOnClick(View view) {
-		showAreYouSureDialogAndSend(DialogType.Both, tag -> {
-			sendApnRequest(tag);
-			sendGcmRequest(tag);
+		showAreYouSureDialogAndSend(DialogType.Both, new SendNotificationTask() {
+			@Override
+			public void run(String tag) {
+				sendGcmRequest(tag);
+				sendApnRequest(tag);
+			}
 		});
 	}
 
@@ -123,7 +141,12 @@ public class MainActivity extends AppCompatActivity {
 						new AlertDialog.Builder(MainActivity.this)
 								.setTitle(getString(R.string.message_in_tag, tag))
 								.setMessage(getString(R.string.message_send_to_count, numberOfDevices))
-								.setPositiveButton(R.string.send, (dialog, which) -> sendNotificationTask.run(tag))
+								.setPositiveButton(R.string.send, new DialogInterface.OnClickListener() {
+									@Override
+									public void onClick(DialogInterface dialog, int which) {
+										sendNotificationTask.run(tag);
+									}
+								})
 								.setNegativeButton(R.string.cancel, null)
 								.create()
 								.show();
@@ -153,8 +176,18 @@ public class MainActivity extends AppCompatActivity {
 		);
 
 		StringRequest stringRequest = new StringRequest(Request.Method.POST, ApiUrl,
-				response -> Toast.makeText(MainActivity.this, R.string.send_success, Toast.LENGTH_SHORT).show(),
-				error -> Toast.makeText(MainActivity.this, R.string.send_failed_ios_passed_android, Toast.LENGTH_SHORT).show()) {
+				new Response.Listener<String>() {
+					@Override
+					public void onResponse(String response) {
+						Toast.makeText(MainActivity.this, R.string.send_success, Toast.LENGTH_SHORT).show();
+					}
+				},
+				new Response.ErrorListener() {
+					@Override
+					public void onErrorResponse(VolleyError error) {
+						Toast.makeText(MainActivity.this, R.string.send_failed_ios_passed_android, Toast.LENGTH_SHORT).show();
+					}
+				}) {
 
 			@Override
 			public byte[] getBody() throws AuthFailureError {
@@ -179,6 +212,11 @@ public class MainActivity extends AppCompatActivity {
 				headers.put("ServiceBusNotification-Apns-Expiry", "2016-10-21T20:00+02:00");
 				return headers;
 			}
+
+			@Override
+			public RetryPolicy getRetryPolicy() {
+				return new DefaultRetryPolicy(90 * 1000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+			}
 		};
 		requestQueue.add(stringRequest);
 	}
@@ -194,8 +232,18 @@ public class MainActivity extends AppCompatActivity {
 		Toast.makeText(this, R.string.send_in_progress, Toast.LENGTH_SHORT).show();
 
 		StringRequest stringRequest = new StringRequest(Request.Method.POST, ApiUrl,
-				response -> Toast.makeText(MainActivity.this, R.string.send_success, Toast.LENGTH_SHORT).show(),
-				error -> Toast.makeText(MainActivity.this, R.string.send_failed, Toast.LENGTH_SHORT).show()) {
+				new Response.Listener<String>() {
+					@Override
+					public void onResponse(String response) {
+						Toast.makeText(MainActivity.this, R.string.send_success, Toast.LENGTH_SHORT).show();
+					}
+				},
+				new Response.ErrorListener() {
+					@Override
+					public void onErrorResponse(VolleyError error) {
+						Toast.makeText(MainActivity.this, R.string.send_failed, Toast.LENGTH_SHORT).show();
+					}
+				}) {
 
 			@Override
 			public byte[] getBody() throws AuthFailureError {
@@ -218,6 +266,11 @@ public class MainActivity extends AppCompatActivity {
 				headers.put("ServiceBusNotification-Format", "gcm");
 				headers.put("ServiceBusNotification-Tags", tag);
 				return headers;
+			}
+
+			@Override
+			public RetryPolicy getRetryPolicy() {
+				return new DefaultRetryPolicy(90 * 1000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
 			}
 		};
 
